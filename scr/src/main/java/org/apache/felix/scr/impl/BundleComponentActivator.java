@@ -34,6 +34,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.felix.scr.component.manager.ComponentManagerFactory;
 import org.apache.felix.scr.impl.helper.ConfigAdminTracker;
 import org.apache.felix.scr.impl.logger.BundleLogger;
 import org.apache.felix.scr.impl.logger.ComponentLogger;
@@ -95,6 +96,8 @@ public class BundleComponentActivator implements ComponentActivator
     private final Map<String, ListenerInfo> listenerMap = new HashMap<>();
 
     private final BundleLogger logger;
+
+    private final ComponentManagerFactory managerFactory;
 
     private static class ListenerInfo implements ServiceListener
     {
@@ -271,6 +274,42 @@ public class BundleComponentActivator implements ComponentActivator
             }
         }
         configAdminTracker = tracker;
+        managerFactory = getComponentManagerFactory(m_bundle, logger);
+    }
+
+    static private ComponentManagerFactory getComponentManagerFactory(
+        Bundle bundle, BundleLogger logger)
+    {
+        // TODO in the end this should probably not come from a header
+        // Using a header for now to make progress.
+        // More appropriate options:
+        // 1) Add an attribute to the osgi.extender requirement:
+        //    Require-Capability: osgi.extender;
+        //      filter:="(&(osgi.extender=osgi.component)(version>=1.4)(!(version>=2.0)))";
+        //      componentManager="my.component.manager.ComponentManagerFactoryImpl"
+        // 2) Add some meta-data to the component XML
+        String factoryClassName = bundle.getHeaders("").get(
+            "SCR-ComponentManagerFactory-Class");
+        ComponentManagerFactory factory = null;
+        if (factoryClassName != null)
+        {
+            logger.log(LogService.LOG_DEBUG,
+                "ComponentRegistry : No-Reflection factory class {0}", null,
+                factoryClassName);
+            try
+            {
+                factory = (ComponentManagerFactory) bundle.loadClass(
+                    factoryClassName).newInstance();
+            }
+            catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException ex)
+            {
+                logger.log(LogService.LOG_DEBUG, "Unable to create factory class "
+                    + factoryClassName + " using reflection instead", ex);
+            }
+        }
+
+        return factory;
     }
 
     /**
@@ -488,7 +527,7 @@ public class BundleComponentActivator implements ComponentActivator
 
             // Request creation of the component manager
             ComponentHolder<?> holder = m_componentRegistry.createComponentHolder(this,
-                metadata, componentLogger);
+                metadata, componentLogger, managerFactory);
 
             // register the component after validation
             m_componentRegistry.registerComponentHolder(key, holder);

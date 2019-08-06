@@ -44,6 +44,7 @@ import org.apache.felix.scr.impl.config.ScrConfigurationImpl;
 import org.apache.felix.scr.impl.inject.ClassUtils;
 import org.apache.felix.scr.impl.logger.ScrLogger;
 import org.apache.felix.scr.impl.manager.ComponentHolder;
+import org.apache.felix.scr.impl.manager.ScrConfiguration;
 import org.apache.felix.scr.impl.metadata.ComponentMetadata;
 import org.apache.felix.scr.impl.metadata.MetadataStoreHelper.MetaDataReader;
 import org.apache.felix.scr.impl.metadata.MetadataStoreHelper.MetaDataWriter;
@@ -169,13 +170,17 @@ public class Activator extends AbstractExtender
 
     }
 
+    protected ComponentRegistry createComponentRegistry(final ScrConfiguration scrConfiguration, final ScrLogger logger) {
+    	return new ComponentRegistry( this.m_configuration, this.logger );
+    }
+
     @Override
     protected void doStart() throws Exception
     {
 
         // prepare component registry
         m_componentBundles = new HashMap<>();
-        m_componentRegistry = new ComponentRegistry( this.m_configuration, this.logger );
+        m_componentRegistry = createComponentRegistry( this.m_configuration, this.logger );
 
         final ServiceComponentRuntimeImpl runtime = new ServiceComponentRuntimeImpl( m_globalContext, m_componentRegistry );
         m_runtime_reg = m_context.registerService( ServiceComponentRuntime.class,

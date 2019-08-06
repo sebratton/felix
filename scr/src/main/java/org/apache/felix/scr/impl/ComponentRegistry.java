@@ -33,6 +33,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.felix.scr.component.manager.ComponentManager;
+import org.apache.felix.scr.component.manager.ComponentManagerFactory;
+import org.apache.felix.scr.impl.component.manager.ComponentManagerMethodsImpl;
 import org.apache.felix.scr.impl.inject.ComponentMethods;
 import org.apache.felix.scr.impl.inject.ComponentMethodsImpl;
 import org.apache.felix.scr.impl.logger.ComponentLogger;
@@ -437,25 +440,39 @@ public class ComponentRegistry
      * Factory method to issue {@link ComponentHolder} instances to manage
      * components described by the given component <code>metadata</code>.
      */
-    public <S> ComponentHolder<S> createComponentHolder( ComponentActivator activator, ComponentMetadata metadata, ComponentLogger logger )
+    public <S> ComponentHolder<S> createComponentHolder(ComponentActivator activator,
+        ComponentMetadata metadata, ComponentLogger logger,
+        ComponentManagerFactory managerFactory)
     {
-        return new DefaultConfigurableComponentHolder<>(activator, metadata, logger);
+        return new DefaultConfigurableComponentHolder<>(activator, metadata, logger,
+            managerFactory);
     }
 
     static class DefaultConfigurableComponentHolder<S> extends ConfigurableComponentHolder<S>
     {
-        public DefaultConfigurableComponentHolder(ComponentActivator activator, ComponentMetadata metadata, ComponentLogger logger)
+        private final ComponentManagerFactory managerFactory;
+
+        public DefaultConfigurableComponentHolder(ComponentActivator activator, ComponentMetadata metadata, ComponentLogger logger, ComponentManagerFactory managerFactory)
         {
             super(activator, metadata, logger);
+            this.managerFactory = managerFactory;
         }
 
         @Override
         protected ComponentMethods<S> createComponentMethods()
         {
+            if (managerFactory != null)
+            {
+                ComponentManager componentManager = managerFactory.createComponentManager(
+                    getComponentMetadata().getImplementationClassName());
+                if (componentManager != null)
+                {
+                    return new ComponentManagerMethodsImpl<>(componentManager);
+                }
+            }
             return new ComponentMethodsImpl<>();
         }
     }
-
 
     //---------- ServiceListener
 
