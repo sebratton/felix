@@ -263,6 +263,8 @@ public class BundleComponentActivator implements ComponentActivator
 
         logger.log( LogService.LOG_DEBUG, "BundleComponentActivator : Bundle active", null);
 
+        managerFactory = getComponentManagerFactory(m_bundle, logger);
+
         initialize(cachedComponentMetadata);
         ConfigAdminTracker tracker = null;
         for ( ComponentHolder<?> holder : m_holders )
@@ -274,7 +276,6 @@ public class BundleComponentActivator implements ComponentActivator
             }
         }
         configAdminTracker = tracker;
-        managerFactory = getComponentManagerFactory(m_bundle, logger);
     }
 
     static private ComponentManagerFactory getComponentManagerFactory(

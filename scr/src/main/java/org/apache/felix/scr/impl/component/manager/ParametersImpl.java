@@ -24,6 +24,7 @@ import org.apache.felix.scr.impl.inject.ValueUtils;
 import org.apache.felix.scr.impl.inject.ValueUtils.ValueType;
 import org.apache.felix.scr.impl.manager.ComponentContextImpl;
 import org.apache.felix.scr.impl.manager.RefPair;
+import org.osgi.framework.ServiceReference;
 
 public class ParametersImpl implements Parameters
 {
@@ -41,8 +42,10 @@ public class ParametersImpl implements Parameters
         Object[] objects = new Object[objTypes.length];
         for (int i = 0; i < objTypes.length; ++i)
         {
-            //ValueType valType = ValueUtils.getValueType(objTypes[i]);
-            objects[i] = ValueUtils.getValue(null, ValueType.ref_serviceType, null,
+            ValueType valType = objTypes[i] == ServiceReference.class
+                ? ValueType.ref_serviceReference
+                : ValueType.ref_serviceType;
+            objects[i] = ValueUtils.getValue(null, valType, null,
                 context, refPair);
         }
         return objects;

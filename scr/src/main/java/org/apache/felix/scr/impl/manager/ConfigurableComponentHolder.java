@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.felix.scr.component.manager.ComponentManagerFactory;
 import org.apache.felix.scr.impl.inject.ComponentMethods;
 import org.apache.felix.scr.impl.logger.ComponentLogger;
 import org.apache.felix.scr.impl.metadata.ComponentMetadata;
@@ -143,10 +144,18 @@ public abstract class ConfigurableComponentHolder<S> implements ComponentHolder<
 
     private final ComponentLogger logger;
 
+    protected final ComponentManagerFactory managerFactory;
+
     public ConfigurableComponentHolder( final ComponentActivator activator,
             final ComponentMetadata metadata,
-            final ComponentLogger logger)
+        final ComponentLogger logger)
     {
+        this(activator, metadata, logger, null);
+    }
+
+    public ConfigurableComponentHolder(final ComponentActivator activator, final ComponentMetadata metadata, final ComponentLogger logger, ComponentManagerFactory managerFactory)
+    {
+        this.managerFactory = managerFactory;
         this.logger = logger;
         this.m_activator = activator;
         this.m_componentMetadata = metadata;

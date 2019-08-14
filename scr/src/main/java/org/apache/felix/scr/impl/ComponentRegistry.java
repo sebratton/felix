@@ -450,12 +450,9 @@ public class ComponentRegistry
 
     static class DefaultConfigurableComponentHolder<S> extends ConfigurableComponentHolder<S>
     {
-        private final ComponentManagerFactory managerFactory;
-
         public DefaultConfigurableComponentHolder(ComponentActivator activator, ComponentMetadata metadata, ComponentLogger logger, ComponentManagerFactory managerFactory)
         {
-            super(activator, metadata, logger);
-            this.managerFactory = managerFactory;
+            super(activator, metadata, logger, managerFactory);
         }
 
         @Override
