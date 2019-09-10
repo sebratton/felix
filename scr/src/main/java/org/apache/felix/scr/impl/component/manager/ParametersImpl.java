@@ -18,6 +18,8 @@
  */
 package org.apache.felix.scr.impl.component.manager;
 
+import java.util.Map;
+
 import org.apache.felix.scr.component.manager.Parameters;
 import org.apache.felix.scr.impl.inject.BindParameters;
 import org.apache.felix.scr.impl.inject.ValueUtils;
@@ -40,11 +42,18 @@ public class ParametersImpl implements Parameters
         ComponentContextImpl<?> context = bp.getComponentContext();
         RefPair<?, ?> refPair = bp.getRefPair();
         Object[] objects = new Object[objTypes.length];
-        for (int i = 0; i < objTypes.length; ++i)
+        for (int i = 0; i < objTypes.length; i++)
         {
-            ValueType valType = objTypes[i] == ServiceReference.class
-                ? ValueType.ref_serviceReference
-                : ValueType.ref_serviceType;
+            Class<?> obj = objTypes[i];
+            ValueType valType;
+            if(obj == ServiceReference.class) {
+                valType = ValueType.ref_serviceReference;
+            } else if (obj == Map.class) {
+                valType = ValueType.ref_map;
+            } else {
+                valType = ValueType.ref_serviceType;
+            }
+            
             objects[i] = ValueUtils.getValue(null, valType, null,
                 context, refPair);
         }
