@@ -56,7 +56,7 @@ public class ComponentManagerLifecycleMethod implements LifecycleMethod {
                 val = m_componentLifecycleManager.modified(componentInstance, componentContext);
             }
             return val == ReturnValue.VOID ? MethodResult.VOID : new MethodResult(val.isVoid(), val.getReturnValue());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             componentContext.getLogger().log( LogService.LOG_ERROR, "The {0} method has thrown an exception", e,
                     methodType );
             if ( methodCallFailureResult != null && methodCallFailureResult.getResult() != null )

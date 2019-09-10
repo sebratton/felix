@@ -81,7 +81,7 @@ public class ComponentManagerBindMethod implements ReferenceMethod, InitReferenc
                     new ParametersImpl(parameter));
             }
             return val == ReturnValue.VOID ? MethodResult.VOID : new MethodResult(val.isVoid(), val.getReturnValue());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             parameter.getComponentContext().getLogger().log( LogService.LOG_ERROR, "The {0} method has thrown an exception", e,
                     methodType );
             if ( methodCallFailureResult != null && methodCallFailureResult.getResult() != null )

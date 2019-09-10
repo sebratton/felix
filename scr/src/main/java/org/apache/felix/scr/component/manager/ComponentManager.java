@@ -22,17 +22,17 @@ import org.osgi.service.component.ComponentContext;
 
 public interface ComponentManager {
 
-	ReturnValue activate(Object instance, ComponentContext componentContext);
+	ReturnValue activate(Object instance, ComponentContext componentContext) throws Throwable;
 
-    ReturnValue deactivate(Object instance, ComponentContext componentContext, int reason);
+    ReturnValue deactivate(Object instance, ComponentContext componentContext, int reason) throws Throwable;
     
-    ReturnValue modified(Object instance, ComponentContext componentContext);
+    ReturnValue modified(Object instance, ComponentContext componentContext) throws Throwable;
 
-    ReturnValue bind(Object componentInstance, String name, Parameters parameters);
+    ReturnValue bind(Object componentInstance, String name, Parameters parameters) throws Throwable;
 
-    ReturnValue unbind(Object componentInstance, String name, Parameters parameters);
+    ReturnValue unbind(Object componentInstance, String name, Parameters parameters) throws Throwable;
 
-    ReturnValue updated(Object componentInstance, String name, Parameters parameters);
+    ReturnValue updated(Object componentInstance, String name, Parameters parameters) throws Throwable;
 
     boolean init(Object instance, String name);
 }
